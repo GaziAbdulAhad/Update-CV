@@ -58,6 +58,10 @@ form{display:grid;gap:14px}label{font-weight:600;font-size:14px;display:block;ma
 input,textarea{width:100%;font:inherit;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:8px;padding:11px 13px}
 input[aria-invalid=true],textarea[aria-invalid=true]{border-color:#C0392B}.err{color:#C0392B;font-size:13px;min-height:18px;margin-top:3px}
 @media(prefers-color-scheme:dark){.err{color:#FF8A7A}}
+:root[data-theme=dark]{--ink:#EEF1F5;--soft:#B7BFCC;--paper:#0C1320;--panel:#131C2E;--line:#25324A;--muted:#93A0B5;--sig:#3DD27E;--sigbg:#14301F;--amb:#E8B85A;--ambbg:#3A2D12;color-scheme:dark}
+:root[data-theme=dark] .err{color:#FF8A7A}
+:root[data-theme=light] .err{color:#C0392B}
+.tg{min-width:40px;height:40px;padding:0 12px;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;cursor:pointer;font:600 13.5px Inter,sans-serif;line-height:1;flex:none;white-space:nowrap}.tg:hover{border-color:var(--ink)}
 .ok{display:none;background:var(--sigbg);color:var(--sig);padding:12px 14px;border-radius:8px;font-weight:600}.ok.show{display:block}
 footer{background:#101B2D;color:#EEF1F5;padding:64px 0 28px;margin-top:40px}footer p{color:#B7BFCC;max-width:46ch}
 .fgrid{display:grid;grid-template-columns:1.5fr 1fr;gap:40px}@media(max-width:700px){.fgrid{grid-template-columns:1fr}}
@@ -76,6 +80,7 @@ footer{background:#101B2D;color:#EEF1F5;padding:64px 0 28px;margin-top:40px}foot
   <nav class="links" aria-label="Main">
    <a href="#home">Home</a><a href="#about">About</a><a href="#skills">Skills</a><a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#certs">Certifications</a><a href="#services">Services</a><a href="#contact">Contact</a>
   </nav>
+  <button class="tg" id="tg" type="button" aria-label="Switch to dark mode"></button>
   <a class="btn btn-p" href="#contact">Hire me</a>
   <button class="burger" id="bg" aria-label="Open menu" aria-expanded="false" aria-controls="mn">&#9776;</button>
  </div>
@@ -245,6 +250,13 @@ footer{background:#101B2D;color:#EEF1F5;padding:64px 0 28px;margin-top:40px}foot
 var bg=document.getElementById('bg'),mn=document.getElementById('mn');
 bg.addEventListener('click',function(){var o=mn.classList.toggle('open');bg.setAttribute('aria-expanded',o)});
 mn.addEventListener('click',function(e){if(e.target.tagName=='A'){mn.classList.remove('open');bg.setAttribute('aria-expanded','false')}});
+/* light / dark theme toggle (remembers the visitor's choice) */
+var root=document.documentElement,tg=document.getElementById('tg'),mq=window.matchMedia('(prefers-color-scheme: dark)');
+function cur(){return root.getAttribute('data-theme')||(mq.matches?'dark':'light')}
+function paint(){var d=cur()=='dark';tg.innerHTML=d?'&#9728; Light':'&#9790; Dark';tg.setAttribute('aria-label',d?'Switch to light mode':'Switch to dark mode')}
+try{var sv=localStorage.getItem('theme');if(sv)root.setAttribute('data-theme',sv)}catch(e){}
+paint();
+tg.addEventListener('click',function(){var n=cur()=='dark'?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('theme',n)}catch(e){}paint()});
 /* reveal + skill bars */
 var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){x.target.classList.add('in');x.target.querySelectorAll('.fill').forEach(function(f){f.style.width=f.dataset.w+'%'});io.unobserve(x.target)}})},{threshold:.12});
 document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
